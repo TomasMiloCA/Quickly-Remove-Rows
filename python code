@@ -1,0 +1,19 @@
+#Use the below code to quickly remove rows based on a condition.
+#note that Python works much faster when you use lists to perform operations on your dataframe.
+
+#Feel free to re-purpose the algorithm below to speed up dataframes performance.
+#Please see the readme file to see the use case
+
+df_to_join=[]  
+index_with_problems = []
+
+for i in tqdm(range(len(company_names))):
+  try:
+    a=final_2017.loc[company_names[i]][["revised_1","value"]].reset_index(drop=True)
+    a["revised_value"] = a.groupby("revised_1")["value"].transform("sum")
+    a = a.drop_duplicates(subset=["revised_1"])[["revised_1","revised_value"]]
+    df_to_join.append(a.set_index("revised_1"))
+  except:
+    index_with_problems.append(final_2017.index.values[i])
+
+final_2017.loc[~final_2017.index.isin(index_with_problems)]
